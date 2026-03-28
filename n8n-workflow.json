@@ -1,0 +1,123 @@
+{
+  "name": "P·A·R·I·T·Y Debate Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "parity-debate",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "🎯 Debate Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "parity-debate-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format the debate data into a clean report\nconst data = $input.first().json;\n\nconst winner = data.winner;\nconst winnerEmoji = winner === 'user' ? '🏆' : winner === 'ai' ? '🤖' : '🤝';\nconst winnerLabel = winner === 'user' ? 'YOU WIN' : winner === 'ai' ? 'AI WINS' : 'DRAW';\n\nconst userOverall = data.scores?.overall?.userScore ?? 0;\nconst aiOverall = data.scores?.overall?.aiScore ?? 0;\n\nconst emailSubject = `${winnerEmoji} P·A·R·I·T·Y Debate: \"${data.topic}\" — ${winnerLabel}`;\n\nconst emailBody = `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nP·A·R·I·T·Y DEBATE RESULT\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n${winnerEmoji} RESULT: ${winnerLabel}\n\n📋 PROPOSITION: \"${data.topic}\"\n👤 YOUR SIDE:   ${(data.userSide || '').toUpperCase()}\n🤖 AI PERSONA:  ${(data.persona || '').charAt(0).toUpperCase() + (data.persona || '').slice(1)}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSCORE BREAKDOWN\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nLogic:    You ${data.scores?.logic?.userScore ?? 0} vs AI ${data.scores?.logic?.aiScore ?? 0}\nEvidence: You ${data.scores?.evidence?.userScore ?? 0} vs AI ${data.scores?.evidence?.aiScore ?? 0}\nClarity:  You ${data.scores?.clarity?.userScore ?? 0} vs AI ${data.scores?.clarity?.aiScore ?? 0}\nOverall:  You ${userOverall} vs AI ${aiOverall}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nVERDICT\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n${data.verdict}\n\n⭐ BEST ARGUMENT:\n\"${data.bestArgument}\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${data.shareText}\n\nPowered by P·A·R·I·T·Y × n8n × Featherless AI\n`;\n\nconst discordMessage = [\n  `${winnerEmoji} **${winnerLabel}** — \\\"${data.topic}\\\"`,\n  `> ${data.persona?.charAt(0).toUpperCase() + data.persona?.slice(1)} vs You (${data.userSide?.toUpperCase()})`,\n  `> Overall: You **${userOverall}** / AI **${aiOverall}**`,\n  ``,\n  `*${data.verdict?.slice(0, 200)}...*`,\n  ``,\n  `⭐ Best argument: *\\\"${data.bestArgument?.slice(0, 150)}\\\"*`,\n].join('\\n');\n\nreturn [{\n  json: {\n    ...data,\n    emailSubject,\n    emailBody,\n    discordMessage,\n    winnerLabel,\n    winnerEmoji,\n    userOverall,\n    aiOverall,\n  }\n}];"
+      },
+      "id": "format-debate",
+      "name": "📝 Format Debate Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"received\": true, \"message\": \"Debate automation triggered!\", \"topic\": $json.topic, \"winner\": $json.winner }",
+        "options": {}
+      },
+      "id": "respond-webhook",
+      "name": "✅ Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.winner }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "check-configured",
+      "name": "🔀 Route Actions",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [480, 520]
+    },
+    {
+      "parameters": {
+        "content": "## 🎯 P·A·R·I·T·Y Debate Automation\n\n**This workflow fires every time a debate ends on P·A·R·I·T·Y.**\n\n### Setup\n1. Activate this workflow\n2. Copy the webhook URL from the '🎯 Debate Webhook' node\n3. Paste into your `.env` as `N8N_WEBHOOK_URL=<url>`\n\n### What you can add\n- **Email node** — Send verdict summary to your inbox\n- **Discord/Slack node** — Post result to a channel  \n- **Google Sheets node** — Log all debates to a spreadsheet\n- **Notion node** — Create a page per debate\n- **Airtable node** — Build a debate database\n\n### Payload fields\n- `topic` — the debate proposition\n- `winner` — `user` | `ai` | `draw`\n- `userSide` — `for` | `against`\n- `persona` — AI opponent name\n- `scores.{logic,evidence,clarity,overall}.{userScore,aiScore}`\n- `verdict` — judge's full verdict text\n- `bestArgument` — highlighted best argument\n- `emailBody` — pre-formatted email text\n- `discordMessage` — pre-formatted Discord message\n\n*Powered by P·A·R·I·T·Y × n8n × Featherless AI — LovHack Season 2*",
+        "height": 600,
+        "width": 400
+      },
+      "id": "sticky-instructions",
+      "name": "📌 Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [960, 200]
+    },
+    {
+      "parameters": {
+        "content": "### 📧 Add Email Node here\nConnect to Gmail, Outlook, or SMTP.\nUse `{{ $json.emailSubject }}` for subject\nUse `{{ $json.emailBody }}` for body",
+        "height": 160,
+        "width": 300,
+        "color": 5
+      },
+      "id": "sticky-email",
+      "name": "📌 Email placeholder",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [480, 700]
+    },
+    {
+      "parameters": {
+        "content": "### 💬 Add Discord/Slack Node here\nUse `{{ $json.discordMessage }}` for message content",
+        "height": 140,
+        "width": 300,
+        "color": 3
+      },
+      "id": "sticky-discord",
+      "name": "📌 Discord placeholder",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [840, 700]
+    }
+  ],
+  "connections": {
+    "🎯 Debate Webhook": {
+      "main": [
+        [
+          { "node": "📝 Format Debate Report", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "📝 Format Debate Report": {
+      "main": [
+        [
+          { "node": "✅ Respond to Webhook", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "parity-v1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "parity-debate-engine"
+  },
+  "id": "parity-n8n-workflow",
+  "tags": ["parity", "debate", "lovhack", "featherless-ai"]
+}

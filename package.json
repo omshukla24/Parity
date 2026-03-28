@@ -1,0 +1,28 @@
+{
+  "name": "parity",
+  "private": true,
+  "version": "1.0.0",
+  "description": "P.A.R.I.T.Y. — Parallel Algorithms for Resolution of Ideological and Tactical Yields",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "backend": "uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.3.8",
+    "lucide-react": "^0.446.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.2"
+  }
+}
