@@ -75,7 +75,18 @@ export default function ApiKeyModal({ open, onClose, currentKey, onSave }: ApiKe
             }}
           />
 
-          {/* Modal */}
+          {/* Modal centering wrapper — flex-based so framer-motion transforms don't conflict */}
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 101,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              pointerEvents: 'none',
+            }}
+          >
           <motion.div
             key="modal"
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -83,17 +94,15 @@ export default function ApiKeyModal({ open, onClose, currentKey, onSave }: ApiKe
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2, ease: [0.34, 1.56, 0.64, 1] }}
             style={{
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
               width: 'min(480px, calc(100vw - 32px))',
+              maxHeight: 'calc(100vh - 48px)',
+              overflowY: 'auto',
               background: '#0A0A0A',
               border: '1px solid rgba(255,255,255,0.1)',
               borderRadius: 16,
               padding: '28px 28px 24px',
-              zIndex: 101,
               boxShadow: '0 0 60px rgba(129,140,248,0.1), 0 24px 80px rgba(0,0,0,0.8)',
+              pointerEvents: 'auto',
             }}
           >
             {/* Header */}
@@ -474,6 +483,7 @@ export default function ApiKeyModal({ open, onClose, currentKey, onSave }: ApiKe
               </button>
             </div>
           </motion.div>
+          </div>
         </>
       )}
     </AnimatePresence>
