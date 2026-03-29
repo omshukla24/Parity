@@ -11,6 +11,7 @@ import SideSelect from './components/screens/SideSelect'
 import DebateArena from './components/screens/DebateArena'
 import VerdictScreen from './components/screens/VerdictScreen'
 import Leaderboard from './components/screens/Leaderboard'
+import VoiceDebateArena from './components/screens/VoiceDebateArena'
 import DotGrid from './components/ui/DotGrid'
 
 // Screen transition variants
@@ -37,8 +38,9 @@ const SCREEN_INDEX: Record<string, number> = {
   steelman: 1,
   sideselect: 2,
   debate: 3,
-  verdict: 4,
-  leaderboard: 5,
+  voice_debate: 4,
+  verdict: 5,
+  leaderboard: 6,
 }
 
 let prevScreenIdx = 0
@@ -81,9 +83,10 @@ export default function App() {
           {screen === 'topic'       && <TopicInput />}
           {screen === 'steelman'    && <SteelmanView />}
           {screen === 'sideselect'  && <SideSelect />}
-          {screen === 'debate'      && <DebateArena />}
-          {screen === 'verdict'     && <VerdictScreen />}
-          {screen === 'leaderboard' && <Leaderboard />}
+          {screen === 'debate'        && <DebateArena />}
+          {screen === 'voice_debate'  && <VoiceDebateArena />}
+          {screen === 'verdict'       && <VerdictScreen />}
+          {screen === 'leaderboard'   && <Leaderboard />}
         </motion.div>
       </AnimatePresence>
     </div>

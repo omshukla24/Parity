@@ -63,14 +63,16 @@ export default function SideSelect() {
   const [hoveredSide, setHoveredSide] = useState<Side | null>(null)
   const personaMeta = PERSONAS_META[persona]
 
+  const mode = useDebateStore((s) => s.mode)
+
   const handleConfirm = () => {
-    setScreen('debate')
+    setScreen(mode === 'voice' ? 'voice_debate' : 'debate')
   }
 
   return (
     <div className="screen-scroll" style={{ position: 'relative', zIndex: 10 }}>
       <div style={{
-        maxWidth: 720,
+        maxWidth: 1024,
         margin: '0 auto',
         padding: '0 24px 80px',
         minHeight: '100vh',

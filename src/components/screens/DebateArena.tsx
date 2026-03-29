@@ -8,7 +8,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, Send, Zap, Eye, EyeOff, BookOpen,
-  AlertTriangle, ChevronRight, Flag,
+  AlertTriangle, ChevronRight, Flag, Mic, MicOff, Volume2, VolumeX
 } from 'lucide-react'
 import { useDebateStore } from '../../store/debateStore'
 import { useDebate } from '../../hooks/useDebate'
@@ -19,17 +19,17 @@ import type { DebateMessage } from '../../types'
 const PERSONAS_META: Record<string, {
   name: string; icon: string; color: string; tagline: string
 }> = {
-  socrates:   { name: 'Socrates',   icon: '🏛',  color: '#818CF8', tagline: 'The Questioner' },
-  lawyer:     { name: 'Attorney',   icon: '⚖️',  color: '#60A5FA', tagline: 'The Advocate' },
-  scientist:  { name: 'Scientist',  icon: '🔬',  color: '#34D399', tagline: 'The Empiricist' },
-  journalist: { name: 'Journalist', icon: '📰',  color: '#F472B6', tagline: 'The Contrarian' },
-  kant:       { name: 'Kant',       icon: '📚',  color: '#A78BFA', tagline: 'The Rationalist' },
+  socrates: { name: 'Socrates', icon: '🏛', color: '#818CF8', tagline: 'The Questioner' },
+  lawyer: { name: 'Attorney', icon: '⚖️', color: '#60A5FA', tagline: 'The Advocate' },
+  scientist: { name: 'Scientist', icon: '🔬', color: '#34D399', tagline: 'The Empiricist' },
+  journalist: { name: 'Journalist', icon: '📰', color: '#F472B6', tagline: 'The Contrarian' },
+  kant: { name: 'Kant', icon: '📚', color: '#A78BFA', tagline: 'The Rationalist' },
 }
 
 const SIDE_LABELS: Record<string, { label: string; color: string }> = {
-  for:    { label: 'FOR',             color: 'var(--for)' },
-  against:{ label: 'AGAINST',         color: 'var(--against)' },
-  devil:  { label: "DEVIL'S ADVOCATE",color: 'var(--devil)' },
+  for: { label: 'FOR', color: 'var(--for)' },
+  against: { label: 'AGAINST', color: 'var(--against)' },
+  devil: { label: "DEVIL'S ADVOCATE", color: 'var(--devil)' },
 }
 
 export default function DebateArena() {
@@ -45,6 +45,9 @@ export default function DebateArena() {
   const [userInput, setUserInput] = useState('')
   const [charCount, setCharCount] = useState(0)
   const [showCoachPanel, setShowCoachPanel] = useState(false)
+  const [isListening, setIsListening] = useState(false)
+  const [autoPlayAudio, setAutoPlayAudio] = useState(mode === 'voice')
+  const recognitionRef = useRef<any>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -52,6 +55,81 @@ export default function DebateArena() {
   const sideMeta = SIDE_LABELS[userSide]
   const isDebateOver = round >= maxRounds
   const canSend = userInput.trim().length > 0 && !isStreaming && !isLoading && !isDebateOver
+
+  // Speech Recognition Setup
+  useEffect(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition()
+      recognition.continuous = true
+      recognition.interimResults = true
+      
+      recognition.onresult = (event: any) => {
+        let finalTranscript = ''
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript
+        }
+        if (finalTranscript) setUserInput(prev => (prev + ' ' + finalTranscript).trim())
+      }
+      
+      recognition.onerror = () => setIsListening(false)
+      recognition.onend = () => {
+        setIsListening(false)
+        if (mode === 'voice' && !isDebateOver && !isStreaming) {
+           // Optionally auto-restart, but safer to let user click to speak again to avoid feedback loops
+        }
+      }
+      recognitionRef.current = recognition
+      
+      // Auto-start mic if in voice mode and not streaming
+      if (mode === 'voice') {
+        setTimeout(() => {
+          try {
+            recognition.start()
+            setIsListening(true)
+          } catch(e) {}
+        }, 1000)
+      }
+    }
+  }, [mode])
+
+  const toggleMic = () => {
+    if (!recognitionRef.current) return
+    if (isListening) {
+      recognitionRef.current.stop()
+      setIsListening(false)
+    } else {
+      setUserInput('')
+      recognitionRef.current.start()
+      setIsListening(true)
+    }
+  }
+
+  // Text-to-Speech logic
+  useEffect(() => {
+    if (!isStreaming && messages.length > 0 && autoPlayAudio) {
+      const lastMsg = messages[messages.length - 1]
+      if (lastMsg.role === 'ai' && lastMsg.text) {
+        window.speechSynthesis.cancel()
+        const utterance = new SpeechSynthesisUtterance(lastMsg.text)
+        const voices = window.speechSynthesis.getVoices()
+        if (voices.length > 0) {
+          if (persona === 'socrates') utterance.voice = voices.find(v => v.name.includes('Google UK English Male') || v.name.includes('Daniel') || v.lang.includes('en-GB')) || null
+          else if (persona === 'lawyer') utterance.voice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Google US English')) || null
+          else if (persona === 'scientist') utterance.voice = voices.find(v => v.name.includes('Google UK English Female') || v.name.includes('Karen')) || null
+          else if (persona === 'journalist') utterance.voice = voices.find(v => v.name.includes('Tessa') || v.name.includes('Google US English')) || null
+          else if (persona === 'kant') utterance.voice = voices.find(v => v.name.includes('Moira') || v.lang.includes('en-IE')) || null
+        }
+        utterance.rate = 1.05
+        window.speechSynthesis.speak(utterance)
+      }
+    }
+  }, [messages, isStreaming, autoPlayAudio, persona])
+
+  // Stop audio on unmount
+  useEffect(() => {
+    return () => { window.speechSynthesis.cancel() }
+  }, [])
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -135,6 +213,22 @@ export default function DebateArena() {
             }}
           >
             <AlertTriangle size={15} />
+          </button>
+
+          {/* Voice mode toggle */}
+          <button
+            className="btn-icon"
+            onClick={() => {
+              setAutoPlayAudio(!autoPlayAudio)
+              if (autoPlayAudio) window.speechSynthesis.cancel()
+            }}
+            title={autoPlayAudio ? 'Voice Mode: ON' : 'Voice Mode: OFF'}
+            style={{
+              color: autoPlayAudio ? 'var(--brand)' : 'var(--text-4)',
+              borderColor: autoPlayAudio ? 'rgba(52,211,153,0.3)' : 'var(--border)',
+            }}
+          >
+            {autoPlayAudio ? <Volume2 size={15} /> : <VolumeX size={15} />}
           </button>
 
           {/* Coach mode toggle */}
@@ -226,9 +320,20 @@ export default function DebateArena() {
                 💡 COACH WHISPER — hover to reveal
               </div>
               <div className="coach-hint">
-                <p className="coach-hint-text">
-                  {coachHint ?? 'Loading coaching strategy...'}
-                </p>
+                {Array.isArray(coachHint) && coachHint.length > 0 ? (
+                  <ul style={{ margin: 0, paddingLeft: 16 }}>
+                    {(coachHint as any[]).map((h, i) => (
+                      <li key={i} className="coach-hint-text" style={{ marginBottom: 12 }}>
+                        <strong style={{ color: 'var(--devil)' }}>Tip {i + 1}:</strong> {h.hint} <br />
+                        <span style={{ opacity: 0.6, fontSize: '0.9em' }}>{h.strategy}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="coach-hint-text">
+                    {typeof coachHint === 'string' ? coachHint : 'Loading coaching strategy...'}
+                  </p>
+                )}
               </div>
             </div>
           </motion.div>
@@ -368,7 +473,7 @@ export default function DebateArena() {
             padding: '12px 16px',
             transition: 'border-color 0.2s',
           }}
-          onFocus={() => {}}
+            onFocus={() => { }}
           >
             <textarea
               ref={inputRef}
@@ -413,6 +518,29 @@ export default function DebateArena() {
               </span>
             </div>
           </div>
+
+          {/* Mic Button */}
+          {(window as any).SpeechRecognition || (window as any).webkitSpeechRecognition ? (
+            <button
+              onClick={toggleMic}
+              disabled={isStreaming || isLoading || isDebateOver}
+              title="Voice Typing"
+              style={{
+                width: 46, height: 46, flexShrink: 0, borderRadius: 12,
+                background: isListening ? 'rgba(244,114,182,0.15)' : 'var(--surface)',
+                border: isListening ? '1px solid var(--warn)' : 'none',
+                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: isListening ? 'var(--warn)' : 'var(--text-4)',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {isListening ? (
+                <Mic size={16} />
+              ) : (
+                <MicOff size={16} />
+              )}
+            </button>
+          ) : null}
 
           <button
             onClick={handleSend}

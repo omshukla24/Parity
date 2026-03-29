@@ -147,7 +147,7 @@ export default function VerdictScreen() {
 
   return (
     <div className="screen-scroll" style={{ position: 'relative', zIndex: 10 }}>
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '0 24px 80px' }}>
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 24px 80px' }}>
 
         {/* ── Nav ── */}
         <div style={{
@@ -215,7 +215,7 @@ export default function VerdictScreen() {
               fontSize: 14,
               color: 'var(--text-3)',
               lineHeight: 1.6,
-              maxWidth: 480,
+              maxWidth: 600,
               margin: '0 auto',
             }}>
               <TypewriterText text={score.verdict} speed={14} delay={600} cursor={false} />

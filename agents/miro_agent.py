@@ -79,6 +79,7 @@ async def create_argument_map(
     for_arguments: list[str],
     against_arguments: list[str],
     scores: dict,
+    miro_token: Optional[str] = None,
 ) -> dict:
     """
     Create a Miro board with the full argument map.
@@ -88,7 +89,7 @@ async def create_argument_map(
         {"success": False, "message": "...", "demo": True} if not configured
         {"success": False, "message": "..."} on error
     """
-    token = get_miro_token()
+    token = miro_token or get_miro_token()
 
     if not token:
         logger.info("[MIRO] No token configured — returning demo response")

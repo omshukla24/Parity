@@ -5,17 +5,21 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Key, CheckCircle, ExternalLink, Eye, EyeOff, Trash2 } from 'lucide-react'
+import { X, Key, CheckCircle, ExternalLink, Eye, EyeOff, Trash2, Zap, Map } from 'lucide-react'
+import { useDebateStore } from '../../store/debateStore'
 
 interface ApiKeyModalProps {
   open: boolean
   onClose: () => void
   currentKey: string
-  onSave: (key: string) => void
+  onSave: (key: string, n8n: string, miro: string) => void
 }
 
 export default function ApiKeyModal({ open, onClose, currentKey, onSave }: ApiKeyModalProps) {
+  const { n8nUrl: storeN8n, miroToken: storeMiro } = useDebateStore()
   const [inputKey, setInputKey] = useState(currentKey)
+  const [inputN8n, setInputN8n] = useState(storeN8n)
+  const [inputMiro, setInputMiro] = useState(storeMiro)
   const [showKey, setShowKey] = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -23,13 +27,14 @@ export default function ApiKeyModal({ open, onClose, currentKey, onSave }: ApiKe
   useEffect(() => {
     if (open) {
       setInputKey(currentKey)
+      setInputN8n(storeN8n)
+      setInputMiro(storeMiro)
       setSaved(false)
     }
-  }, [open, currentKey])
+  }, [open, currentKey, storeN8n, storeMiro])
 
   const handleSave = () => {
-    const trimmed = inputKey.trim()
-    onSave(trimmed)
+    onSave(inputKey.trim(), inputN8n.trim(), inputMiro.trim())
     setSaved(true)
     setTimeout(() => {
       setSaved(false)
@@ -39,7 +44,9 @@ export default function ApiKeyModal({ open, onClose, currentKey, onSave }: ApiKe
 
   const handleClear = () => {
     setInputKey('')
-    onSave('')
+    setInputN8n('')
+    setInputMiro('')
+    onSave('', '', '')
   }
 
   const maskedKey = inputKey
@@ -256,6 +263,118 @@ export default function ApiKeyModal({ open, onClose, currentKey, onSave }: ApiKe
               </p>
             </div>
 
+            {/* n8n section */}
+            <div style={{
+              padding: '16px 18px',
+              background: 'rgba(255,100,0,0.02)',
+              border: '1px solid rgba(255,100,0,0.1)',
+              borderRadius: 12,
+              marginBottom: 16,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <Zap size={15} color="#FF6400" />
+                <span style={{
+                  fontFamily: "'Space Mono', monospace",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: 'rgba(255,255,255,0.7)',
+                  letterSpacing: '0.08em',
+                }}>
+                  N8N WEBHOOK URL
+                </span>
+                {storeN8n && (
+                  <span style={{
+                    padding: '2px 8px',
+                    background: 'rgba(52,211,153,0.1)',
+                    border: '1px solid rgba(52,211,153,0.25)',
+                    borderRadius: 4,
+                    fontFamily: "'Space Mono', monospace",
+                    fontSize: 9,
+                    color: '#34D399',
+                    letterSpacing: '0.05em',
+                  }}>ACTIVE</span>
+                )}
+              </div>
+              <input
+                type="text"
+                value={inputN8n}
+                onChange={e => setInputN8n(e.target.value)}
+                placeholder="https://youri.app.n8n.cloud/webhook/..."
+                autoComplete="off"
+                spellCheck={false}
+                style={{
+                  width: '100%',
+                  padding: '11px 14px',
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 8,
+                  color: '#fff',
+                  fontFamily: "'Space Mono', monospace",
+                  fontSize: 12,
+                  outline: 'none',
+                  letterSpacing: '0.04em',
+                  transition: 'border-color 0.2s',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
+            {/* Miro section */}
+            <div style={{
+              padding: '16px 18px',
+              background: 'rgba(255,215,0,0.02)',
+              border: '1px solid rgba(255,215,0,0.1)',
+              borderRadius: 12,
+              marginBottom: 16,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <Map size={15} color="#FFD700" />
+                <span style={{
+                  fontFamily: "'Space Mono', monospace",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: 'rgba(255,255,255,0.7)',
+                  letterSpacing: '0.08em',
+                }}>
+                  MIRO ACCESS TOKEN
+                </span>
+                {storeMiro && (
+                  <span style={{
+                    padding: '2px 8px',
+                    background: 'rgba(52,211,153,0.1)',
+                    border: '1px solid rgba(52,211,153,0.25)',
+                    borderRadius: 4,
+                    fontFamily: "'Space Mono', monospace",
+                    fontSize: 9,
+                    color: '#34D399',
+                    letterSpacing: '0.05em',
+                  }}>ACTIVE</span>
+                )}
+              </div>
+              <input
+                type="password"
+                value={inputMiro}
+                onChange={e => setInputMiro(e.target.value)}
+                placeholder="eyJhbG..."
+                autoComplete="off"
+                spellCheck={false}
+                style={{
+                  width: '100%',
+                  padding: '11px 14px',
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 8,
+                  color: '#fff',
+                  fontFamily: "'Space Mono', monospace",
+                  fontSize: 12,
+                  outline: 'none',
+                  letterSpacing: '0.04em',
+                  transition: 'border-color 0.2s',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
             {/* How it works */}
             <div style={{
               padding: '12px 14px',
@@ -335,24 +454,22 @@ export default function ApiKeyModal({ open, onClose, currentKey, onSave }: ApiKe
                   padding: '10px 20px',
                   background: saved
                     ? 'rgba(52,211,153,0.15)'
-                    : isValid
-                    ? 'rgba(129,140,248,0.15)'
-                    : 'rgba(255,255,255,0.03)',
-                  border: `1px solid ${saved ? 'rgba(52,211,153,0.4)' : isValid ? 'rgba(129,140,248,0.35)' : 'rgba(255,255,255,0.06)'}`,
+                    : 'rgba(255,255,255,0.08)',
+                  border: saved ? '1px solid rgba(52,211,153,0.4)' : '1px solid rgba(255,255,255,0.15)',
                   borderRadius: 8,
-                  color: saved ? '#34D399' : isValid ? '#818CF8' : 'rgba(255,255,255,0.25)',
+                  color: saved ? '#34D399' : '#fff',
                   fontFamily: "'Space Mono', monospace",
                   fontSize: 10,
                   fontWeight: 700,
                   letterSpacing: '0.1em',
-                  cursor: isValid ? 'pointer' : 'not-allowed',
+                  cursor: 'pointer',
                   transition: 'all 0.2s',
                 }}
               >
                 {saved ? (
                   <><CheckCircle size={13} /> SAVED</>
                 ) : (
-                  'SAVE KEY'
+                  'SAVE CONFIG'
                 )}
               </button>
             </div>
