@@ -285,20 +285,15 @@ export function useDebate() {
           setCoachHint(coachRes?.hints ?? null)
         }
 
-        // Check if debate is over (skip auto-judge in voice mode — voice arena handles it after speech)
-        const currentRound = useDebateStore.getState().round
-        if (currentRound >= maxRounds && mode !== 'voice') {
-          setTimeout(() => runJudge(), 500)
-        }
+        // If debate is over, don't auto-judge — let the user read the
+        // AI's final response and press "REQUEST VERDICT" when ready.
+
       },
       () => {
         // Demo mode
         const demoText = getDemoResponse(round)
         setTimeout(() => {
           finalizeAiMessage(demoText)
-          if (round + 1 >= maxRounds && mode !== 'voice') {
-            setTimeout(() => runJudge(), 800)
-          }
         }, 1200)
       },
     )
