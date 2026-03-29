@@ -23,7 +23,7 @@ export default function Leaderboard() {
 
   return (
     <div className="screen-scroll" style={{ position: 'relative', zIndex: 10 }}>
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '0 24px 80px' }}>
+      <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px 80px' }}>
 
         {/* ── Nav ── */}
         <div style={{
@@ -33,7 +33,7 @@ export default function Leaderboard() {
           paddingTop: 28,
           paddingBottom: 20,
         }}>
-          <button className="nav-back" onClick={goBack} style={{ position: 'static' }}>
+          <button className="nav-back" onClick={() => setScreen('topic')} style={{ position: 'static' }}>
             <ArrowLeft size={14} /> BACK
           </button>
           <button

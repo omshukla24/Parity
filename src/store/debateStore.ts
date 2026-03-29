@@ -6,11 +6,14 @@ import { create } from 'zustand'
 import type {
   Screen, Side, DebateMode, PersonaType,
   DebateState, Argument, DebateMessage, Score,
-  FallacyDetection, LeaderboardEntry,
+  FallacyDetection, LeaderboardEntry, CoachResponse,
 } from '../types'
 
 // ─── localStorage helpers ───────────────────────────────────────
 const LS_KEY = 'parity_featherless_key'
+const LS_N8N = 'parity_n8n_url'
+const LS_MIRO = 'parity_miro_token'
+
 function loadStoredKey(): string {
   try { return localStorage.getItem(LS_KEY) ?? '' } catch { return '' }
 }
@@ -18,6 +21,26 @@ function saveKeyToStorage(key: string) {
   try {
     if (key) localStorage.setItem(LS_KEY, key)
     else localStorage.removeItem(LS_KEY)
+  } catch { /* ignore */ }
+}
+
+function loadN8nUrl(): string {
+  try { return localStorage.getItem(LS_N8N) ?? '' } catch { return '' }
+}
+function saveN8nUrl(url: string) {
+  try {
+    if (url) localStorage.setItem(LS_N8N, url)
+    else localStorage.removeItem(LS_N8N)
+  } catch { /* ignore */ }
+}
+
+function loadMiroToken(): string {
+  try { return localStorage.getItem(LS_MIRO) ?? '' } catch { return '' }
+}
+function saveMiroToken(token: string) {
+  try {
+    if (token) localStorage.setItem(LS_MIRO, token)
+    else localStorage.removeItem(LS_MIRO)
   } catch { /* ignore */ }
 }
 
@@ -105,6 +128,8 @@ const defaultState: DebateState = {
   steelmanFor: [],
   steelmanAgainst: [],
   apiKey: loadStoredKey(),
+  n8nUrl: loadN8nUrl(),
+  miroToken: loadMiroToken(),
   messages: [],
   round: 0,
   maxRounds: 5,
@@ -144,7 +169,7 @@ interface DebateStore extends DebateState {
 
   // Coach
   toggleCoachMode: () => void
-  setCoachHint: (hint: string | null) => void
+  setCoachHint: (hint: CoachResponse[] | string[] | string | null) => void
 
   // Streaming
   setLoading: (loading: boolean) => void
@@ -158,6 +183,8 @@ interface DebateStore extends DebateState {
 
   // API Key (user-provided Featherless key)
   setApiKey: (key: string) => void
+  setN8nUrl: (url: string) => void
+  setMiroToken: (token: string) => void
 
   // Reset
   reset: () => void
@@ -165,7 +192,7 @@ interface DebateStore extends DebateState {
 }
 
 // ─── Screen History ────────────────────────────────────────────
-const SCREEN_ORDER: Screen[] = ['topic', 'steelman', 'sideselect', 'debate', 'verdict']
+const SCREEN_ORDER: Screen[] = ['topic', 'steelman', 'sideselect', 'debate', 'voice_debate', 'verdict']
 
 // ─── Store Creation ─────────────────────────────────────────────
 export const useDebateStore = create<DebateStore>((set, get) => ({
@@ -190,6 +217,7 @@ export const useDebateStore = create<DebateStore>((set, get) => ({
       oxford: 3,
       socratic: 4,
       speed: 5,
+      voice: 5,
     }
     set({ mode, maxRounds: modeMaxRounds[mode] })
   },
@@ -260,6 +288,14 @@ export const useDebateStore = create<DebateStore>((set, get) => ({
   setApiKey: (key: string) => {
     saveKeyToStorage(key)
     set({ apiKey: key })
+  },
+  setN8nUrl: (url: string) => {
+    saveN8nUrl(url)
+    set({ n8nUrl: url })
+  },
+  setMiroToken: (token: string) => {
+    saveMiroToken(token)
+    set({ miroToken: token })
   },
 
   // ── Reset ─────────────────────────────────────────────────────

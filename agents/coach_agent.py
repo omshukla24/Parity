@@ -10,9 +10,9 @@ from agents.client import get_client, get_model
 
 COACH_SYSTEM_PROMPT = """\
 You are a master debate coach watching a live debate. Your job is to give the human debater
-a strategic whispered coaching tip for their NEXT argument.
+2-3 strategic whispered coaching tips for their NEXT argument.
 
-Your tip should:
+Each tip should:
 1. Be specific to what just happened in the debate (don't give generic advice)
 2. Identify the AI opponent's key vulnerability or logical gap
 3. Suggest a concrete angle of attack the human hasn't tried yet
@@ -23,38 +23,41 @@ Do NOT:
 - Repeat strategies the human has already tried
 - Be encouraging/cheerleader-ish — be strategic
 
-Respond with ONLY valid JSON:
+Respond with ONLY valid JSON containing an array of 2-3 tips:
 {
-  "hint": "1-2 sentence coaching tip about what angle to take next",
-  "strategy": "1 sentence on the underlying strategic reason"
+  "hints": [
+    {
+      "hint": "1-2 sentence coaching tip about what angle to take next",
+      "strategy": "1 sentence on the underlying strategic reason"
+    }
+  ]
 }
 """
 
 FALLBACK_HINTS = [
-    {
-        "hint": "Attack the underlying assumption, not the surface claim. Ask: what does your opponent need to be TRUE for their argument to hold? Prove that's false.",
-        "strategy": "Undermining premises is more devastating than contesting conclusions.",
-    },
-    {
-        "hint": "Your opponent hasn't addressed the long-term consequences. Pivot to time horizon — their position may hold short-term but fails over decades.",
-        "strategy": "Extending the time frame often reverses the calculus of an argument.",
-    },
-    {
-        "hint": "Name the specific group most harmed by your opponent's position and make the judge feel their absence in this debate.",
-        "strategy": "Concrete human impact is harder to dismiss than abstract principles.",
-    },
-    {
-        "hint": "Your opponent has been making systemic claims but only citing individual examples. Challenge the generalizability of their evidence.",
-        "strategy": "Anecdotal evidence cannot support universal claims — expose that gap.",
-    },
-    {
-        "hint": "Flip the burden of proof. Your opponent is defending the status quo implicitly — make them justify WHY the default position should be maintained.",
-        "strategy": "Forcing your opponent to affirmatively defend their position is often more powerful than attacking it.",
-    },
+    [
+        {
+            "hint": "Attack the underlying assumption, not the surface claim. Ask: what does your opponent need to be TRUE for their argument to hold? Prove that's false.",
+            "strategy": "Undermining premises is more devastating than contesting conclusions."
+        },
+        {
+            "hint": "Flip the burden of proof. Your opponent is defending the status quo implicitly.",
+            "strategy": "Forcing your opponent to affirmatively defend their position is often more powerful than attacking it."
+        }
+    ],
+    [
+        {
+            "hint": "Your opponent hasn't addressed the long-term consequences. Pivot to time horizon.",
+            "strategy": "Extending the time frame often reverses the calculus of an argument."
+        },
+        {
+            "hint": "Name the specific group most harmed by your opponent's position.",
+            "strategy": "Concrete human impact is harder to dismiss than abstract principles."
+        }
+    ]
 ]
 
 _hint_index = 0
-
 
 async def get_coach_hint(
     topic: str,
@@ -64,13 +67,12 @@ async def get_coach_hint(
     round_num: int,
 ) -> dict:
     """
-    Generate a strategic coaching hint based on the current debate state.
+    Generate strategic coaching hints based on the current debate state.
     """
     if not history:
-        return FALLBACK_HINTS[0]
+        return {"hints": FALLBACK_HINTS[0]}
 
-    # Build context from recent debate
-    recent = history[-4:]  # last 2 rounds
+    recent = history[-4:]
     transcript = "\n".join([
         f"{'HUMAN' if m.get('role') == 'user' else 'AI'}: {m.get('text', '')}"
         for m in recent
@@ -85,33 +87,35 @@ CURRENT ROUND: {round_num}
 RECENT EXCHANGE:
 {transcript}
 
-Give the human a coaching tip for their NEXT argument.
+Give the human 2-3 coaching tips for their NEXT argument.
 """
 
     try:
         response = await get_client().chat.completions.create(
-            model=get_model(fast=True),  # use fast model for coaching hints
+            model=get_model(fast=True),
             messages=[
                 {"role": "system", "content": COACH_SYSTEM_PROMPT},
                 {"role": "user",   "content": user_prompt},
             ],
             temperature=0.7,
-            max_tokens=200,
+            max_tokens=400,
             response_format={"type": "json_object"},
         )
 
         content = response.choices[0].message.content
         data = json.loads(content)
+        
+        hints = data.get("hints", [])
+        if not hints or not isinstance(hints, list):
+            return {"hints": FALLBACK_HINTS[0]}
 
-        return {
-            "hint":     data.get("hint",     FALLBACK_HINTS[0]["hint"]),
-            "strategy": data.get("strategy", FALLBACK_HINTS[0]["strategy"]),
-        }
+        return {"hints": hints}
 
     except (json.JSONDecodeError, KeyError):
         global _hint_index
-        hint = FALLBACK_HINTS[_hint_index % len(FALLBACK_HINTS)]
+        hints = FALLBACK_HINTS[_hint_index % len(FALLBACK_HINTS)]
         _hint_index += 1
-        return hint
+        return {"hints": hints}
     except Exception:
-        return FALLBACK_HINTS[round_num % len(FALLBACK_HINTS)]
+        return {"hints": FALLBACK_HINTS[round_num % len(FALLBACK_HINTS)]}
+

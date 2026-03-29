@@ -7,12 +7,13 @@ export type Screen =
   | 'steelman'
   | 'sideselect'
   | 'debate'
+  | 'voice_debate'
   | 'verdict'
   | 'leaderboard'
 
 export type Side = 'for' | 'against' | 'devil'
 
-export type DebateMode = 'casual' | 'oxford' | 'socratic' | 'speed'
+export type DebateMode = 'casual' | 'oxford' | 'socratic' | 'speed' | 'voice'
 
 export type PersonaType = 'socrates' | 'lawyer' | 'scientist' | 'journalist' | 'kant'
 
@@ -98,6 +99,11 @@ export interface LeaderboardEntry {
 }
 
 // ─── App State ─────────────────────────────────────────────────
+export interface CoachResponse {
+  hint: string
+  strategy: string
+}
+
 export interface DebateState {
   screen: Screen
   topic: string
@@ -111,13 +117,15 @@ export interface DebateState {
   maxRounds: number
   score: Score | null
   coachMode: boolean
-  coachHint: string | null
+  coachHint: CoachResponse[] | string[] | string | null
   isLoading: boolean
   isStreaming: boolean
   streamingText: string
   fallacyDetectorOn: boolean
   leaderboard: LeaderboardEntry[]
   apiKey: string  // User-provided Featherless AI key (stored in localStorage)
+  n8nUrl: string
+  miroToken: string
 }
 
 // ─── API Request/Response shapes ───────────────────────────────

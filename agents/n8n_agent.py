@@ -42,6 +42,7 @@ async def send_to_n8n(
     best_argument: str,
     message_count: int,
     highlights: Optional[list] = None,
+    n8n_webhook: Optional[str] = None,
 ) -> dict:
     """
     POST debate results to configured n8n webhook.
@@ -51,7 +52,7 @@ async def send_to_n8n(
         {"success": False, "message": "...", "demo": True} if not configured
         {"success": False, "message": "..."} on error
     """
-    webhook_url = get_n8n_webhook_url()
+    webhook_url = n8n_webhook or get_n8n_webhook_url()
 
     if not webhook_url:
         logger.info("[N8N] No webhook URL configured — returning demo response")

@@ -12,12 +12,12 @@ import { LoadingDots } from '../ui/TypewriterText'
 import ApiKeyModal from '../ui/ApiKeyModal'
 import type { DebateMode, PersonaType } from '../../types'
 
-// ─── Config ────────────────────────────────────────────────────
 const MODES: { id: DebateMode; label: string; desc: string; icon: string }[] = [
   { id: 'casual',   label: 'CASUAL',    desc: 'Open sparring',      icon: '💬' },
   { id: 'oxford',   label: 'OXFORD',    desc: 'Formal structure',   icon: '🎓' },
   { id: 'socratic', label: 'SOCRATIC',  desc: 'AI only questions',  icon: '❓' },
   { id: 'speed',    label: 'SPEED',     desc: '30s per turn',       icon: '⚡' },
+  { id: 'voice',    label: 'VOICE DUEL',desc: 'Live audio clash',   icon: '🎙️' },
 ]
 
 const PERSONAS: { id: PersonaType; name: string; icon: string; style: string; color: string }[] = [
@@ -72,7 +72,7 @@ export default function TopicInput() {
       style={{ position: 'relative', zIndex: 10 }}
     >
       <div style={{
-        maxWidth: 720,
+        maxWidth: 1024,
         margin: '0 auto',
         padding: '0 24px 80px',
         minHeight: '100vh',
@@ -135,7 +135,12 @@ export default function TopicInput() {
           open={showApiKeyModal}
           onClose={() => setShowApiKeyModal(false)}
           currentKey={apiKey}
-          onSave={(key) => { setApiKey(key); setShowApiKeyModal(false) }}
+          onSave={(key, n8n, miro) => { 
+            setApiKey(key)
+            useDebateStore.getState().setN8nUrl(n8n)
+            useDebateStore.getState().setMiroToken(miro)
+            setShowApiKeyModal(false) 
+          }}
         />
 
         {/* ── Hero ── */}
@@ -189,7 +194,7 @@ export default function TopicInput() {
             fontSize: 16,
             color: 'rgba(255,255,255,0.5)',
             lineHeight: 1.6,
-            maxWidth: 480,
+            maxWidth: 600,
           }}>
             AI steelmans both sides. You pick your position. The engine argues back across 5 rounds. A judge renders a verdict.
           </p>
@@ -297,7 +302,7 @@ export default function TopicInput() {
           <SectionLabel>DEBATE MODE</SectionLabel>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
+            gridTemplateColumns: 'repeat(5, 1fr)',
             gap: 8,
             marginTop: 10,
           }}>

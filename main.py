@@ -123,6 +123,7 @@ class N8nExportRequest(BaseModel):
     bestArgument: str = ""
     messageCount: int = 0
     highlights: list[str] = []
+    n8nWebhook: str | None = None
 
 class MiroExportRequest(BaseModel):
     topic: str
@@ -134,6 +135,7 @@ class MiroExportRequest(BaseModel):
     forArguments: list[str] = []
     againstArguments: list[str] = []
     scores: dict
+    miroToken: str | None = None
 
 # ═══════════════════════════════════════════════════════════════
 # Routes
@@ -314,6 +316,7 @@ async def export_to_n8n(req: N8nExportRequest):
             best_argument=req.bestArgument,
             message_count=req.messageCount,
             highlights=req.highlights,
+            n8n_webhook=req.n8nWebhook,
         )
         return result
     except Exception as e:
@@ -343,6 +346,7 @@ async def export_to_miro(req: MiroExportRequest):
             for_arguments=req.forArguments,
             against_arguments=req.againstArguments,
             scores=req.scores,
+            miro_token=req.miroToken,
         )
         return result
     except Exception as e:

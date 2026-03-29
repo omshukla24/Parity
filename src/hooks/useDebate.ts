@@ -9,7 +9,7 @@ import { useDebateStore } from '../store/debateStore'
 import type {
   SteelmanRequest, DebateRequest, JudgeRequest,
   FallacyRequest, CoachRequest, Argument, DebateMessage,
-  FallacyDetection, Score,
+  FallacyDetection, Score, CoachResponse,
 } from '../types'
 
 const API_BASE = '/api'
@@ -281,13 +281,13 @@ export function useDebate() {
             persona,
             round: round + 1,
           }
-          const coachRes = await apiFetch<{ hint: string }>('/coach', coachReq)
-          setCoachHint(coachRes?.hint ?? null)
+          const coachRes = await apiFetch<{ hints: CoachResponse[] }>('/coach', coachReq)
+          setCoachHint(coachRes?.hints ?? null)
         }
 
-        // Check if debate is over
+        // Check if debate is over (skip auto-judge in voice mode — voice arena handles it after speech)
         const currentRound = useDebateStore.getState().round
-        if (currentRound >= maxRounds) {
+        if (currentRound >= maxRounds && mode !== 'voice') {
           setTimeout(() => runJudge(), 500)
         }
       },
@@ -296,7 +296,7 @@ export function useDebate() {
         const demoText = getDemoResponse(round)
         setTimeout(() => {
           finalizeAiMessage(demoText)
-          if (round + 1 >= maxRounds) {
+          if (round + 1 >= maxRounds && mode !== 'voice') {
             setTimeout(() => runJudge(), 800)
           }
         }, 1200)
@@ -342,18 +342,22 @@ export function useDebate() {
 
     setLoading(true)
     const req: CoachRequest = { topic, userSide, history: messages, persona, round }
-    const result = await apiFetch<{ hint: string }>('/coach', req)
+    const result = await apiFetch<{ hints: CoachResponse[] }>('/coach', req)
 
     setCoachHint(
-      result?.hint ??
-        "Try attacking the underlying assumption, not the conclusion. Ask: what does your opponent need to be true for their argument to work? Then prove that's false."
+      result?.hints ?? [
+        {
+          hint: "Try attacking the underlying assumption, not the conclusion. Ask: what does your opponent need to be true for their argument to work? Then prove that's false.",
+          strategy: "Reframe the discussion around first principles."
+        }
+      ]
     )
     setLoading(false)
   }, [])
 
   // ── n8n Export (LovHack S2 Sponsor) ───────────────────────────
   const exportToN8n = useCallback(async () => {
-    const { topic, userSide, persona, score, messages } = useDebateStore.getState()
+    const { topic, userSide, persona, score, messages, n8nUrl } = useDebateStore.getState()
     if (!score) return null
 
     const payload = {
@@ -362,15 +366,16 @@ export function useDebate() {
       persona,
       winner: score.winner,
       scores: {
-        logic:    { userScore: score.logic.userScore,    aiScore: score.logic.aiScore,    commentary: score.logic.commentary },
+        logic: { userScore: score.logic.userScore, aiScore: score.logic.aiScore, commentary: score.logic.commentary },
         evidence: { userScore: score.evidence.userScore, aiScore: score.evidence.aiScore, commentary: score.evidence.commentary },
-        clarity:  { userScore: score.clarity.userScore,  aiScore: score.clarity.aiScore,  commentary: score.clarity.commentary },
-        overall:  { userScore: score.overall.userScore,  aiScore: score.overall.aiScore,  commentary: score.overall.commentary },
+        clarity: { userScore: score.clarity.userScore, aiScore: score.clarity.aiScore, commentary: score.clarity.commentary },
+        overall: { userScore: score.overall.userScore, aiScore: score.overall.aiScore, commentary: score.overall.commentary },
       },
       verdict: score.verdict,
       bestArgument: score.bestArgument ?? '',
       messageCount: messages.length,
       highlights: [],
+      n8nWebhook: n8nUrl || undefined,
     }
 
     const result = await apiFetch<{
@@ -393,7 +398,7 @@ export function useDebate() {
 
   // ── Miro Export (LovHack S2 Sponsor) ──────────────────────────
   const exportToMiro = useCallback(async () => {
-    const { topic, userSide, persona, score, steelmanFor, steelmanAgainst } =
+    const { topic, userSide, persona, score, steelmanFor, steelmanAgainst, miroToken } =
       useDebateStore.getState()
     if (!score) return null
 
@@ -407,11 +412,12 @@ export function useDebate() {
       forArguments: steelmanFor?.map(a => a.text) ?? [],
       againstArguments: steelmanAgainst?.map(a => a.text) ?? [],
       scores: {
-        logic:    { userScore: score.logic.userScore,    aiScore: score.logic.aiScore },
+        logic: { userScore: score.logic.userScore, aiScore: score.logic.aiScore },
         evidence: { userScore: score.evidence.userScore, aiScore: score.evidence.aiScore },
-        clarity:  { userScore: score.clarity.userScore,  aiScore: score.clarity.aiScore },
-        overall:  { userScore: score.overall.userScore,  aiScore: score.overall.aiScore },
+        clarity: { userScore: score.clarity.userScore, aiScore: score.clarity.aiScore },
+        overall: { userScore: score.overall.userScore, aiScore: score.overall.aiScore },
       },
+      miroToken: miroToken || undefined,
     }
 
     const result = await apiFetch<{
