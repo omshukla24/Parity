@@ -136,6 +136,15 @@ export default function DebateArena() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isStreaming])
 
+  // Re-focus input after AI finishes streaming so user can type immediately
+  useEffect(() => {
+    if (!isStreaming && !isLoading && !isDebateOver && inputRef.current) {
+      // Small timeout lets React finish its re-render cycle before focusing
+      const t = setTimeout(() => inputRef.current?.focus(), 80)
+      return () => clearTimeout(t)
+    }
+  }, [isStreaming, isLoading, isDebateOver])
+
   const handleSend = async () => {
     if (!canSend) return
     const text = userInput.trim()
