@@ -1,178 +1,170 @@
-# P.A.R.I.T.Y. — Demo Video Script
-### LovHack Season 2 · ~3 min
+# P·A·R·I·T·Y — 2-Minute Demo Script
+### LovHack Season 2 Submission
+### 🔗 Live: https://parity-590758428196.us-central1.run.app
 
 ---
 
-## COLD OPEN [0:00–0:08]
+## ⏱️ TIMING OVERVIEW
 
-**[SCREEN: Black. Silence.]**
-
-**NARRATION:**
-> "What if you could debate anything — and an AI would fight back at full strength?"
-
-**[SCREEN: P.A.R.I.T.Y. logo animates in. Tagline pulses: "LOVHACK S2 · DEBATE INTELLIGENCE ENGINE"]**
-
----
-
-## SCREEN 1 — LANDING [0:08–0:40]
-
-**[SCREEN: TopicInput screen fully loaded. DotGrid background. Stats strip visible at bottom: 12,847 debates, 94% fallacies caught.]**
-
-**NARRATION:**
-> "P.A.R.I.T.Y. is a debate intelligence engine. You give it any opinion. It steelmans both sides. You pick a position. Then you fight for it."
-
-**[ACTION: Type into the proposition box — "AI will eliminate more jobs than it creates"]**
-
-**NARRATION:**
-> "Five debate modes — casual sparring, Oxford formal structure, Socratic questioning, speed rounds, or full voice duel."
-
-**[ACTION: Click OXFORD mode. It highlights.]**
-
-**NARRATION:**
-> "And five AI personas — each with a completely different attack style."
-
-**[ACTION: Hover over SOCRATES (questions everything), then click JOURNALIST (contrarian by nature).]**
-
-**NARRATION:**
-> "Today we're facing the Journalist. Contrarian by nature. No mercy."
-
-**[ACTION: Click INITIALIZE DEBATE. Button shows ANALYZING... with loading dots.]**
+| Section | Screen | Duration | Running Total |
+|---|---|---|---|
+| Cold Open | — | 0:00–0:05 | 5s |
+| Landing Page | TopicInput | 0:05–0:25 | 25s |
+| Steelman Analysis | SteelmanView | 0:25–0:40 | 40s |
+| Side Select | SideSelect | 0:40–0:48 | 48s |
+| Live Debate (2 rounds) | DebateArena | 0:48–1:30 | 1:30 |
+| Verdict & Exports | VerdictScreen | 1:30–1:50 | 1:50 |
+| Outro | Landing | 1:50–2:00 | 2:00 |
 
 ---
 
-## SCREEN 2 — STEELMAN VIEW [0:40–1:05]
+## 🎬 COLD OPEN [0:00–0:05]
 
-**[SCREEN: SteelmanView loads. Split panel. FOR on left (green), AGAINST on right (red). Arguments animate in one by one with strength bars.]**
+> **Screen:** Open https://parity-590758428196.us-central1.run.app in full-screen Chrome
 
-**NARRATION:**
-> "Before you pick a side — P.A.R.I.T.Y. builds the strongest possible case for both. No straw men. Only the best arguments each side can make."
-
-**[ACTION: Scroll through a few FOR arguments — point at strength bars filling up.]**
-
-**NARRATION:**
-> "Each argument comes with a strength score and a category — ethical, economic, empirical. You know exactly what you're walking into."
-
-**[ACTION: Scroll the AGAINST panel briefly.]**
-
-**NARRATION:**
-> "Now you choose your battlefield."
-
-**[ACTION: Click PICK YOUR SIDE.]**
+**SAY:**
+> "What if you could debate any opinion — and an AI fights back at full strength?"
 
 ---
 
-## SCREEN 3 — SIDE SELECT [1:05–1:20]
+## 🖥️ SCREEN 1 — LANDING PAGE [0:05–0:25]
 
-**[SCREEN: SideSelect. Three cards — FOR, AGAINST, DEVIL'S ADVOCATE.]**
+**SAY:**
+> "This is Parity — a debate intelligence engine built for LovHack Season 2."
 
-**NARRATION:**
-> "FOR. Against. Or Devil's Advocate — where you argue the side you actually disagree with. Hard mode."
+### DO:
+1. **Click** "↻ Try an example" — it fills a topic
+2. **Delete** the text and **type:**
+   `AI will replace most white-collar jobs within 10 years`
 
-**[ACTION: Hover over DEVIL'S ADVOCATE. Strategy tip appears: "Separate yourself from your beliefs. You are a hired advocate, not a true believer."]**
+**SAY:**
+> "You type any claim. Then pick a mode and an opponent."
 
-**NARRATION:**
-> "We'll go FOR. Defend the claim."
+3. **Click** `OXFORD` mode (🎓)
+4. **Click** `SCIENTIST` persona (🔬)
 
-**[ACTION: Click FOR card. Green glow. Click ENTER THE ARENA.]**
+**SAY:**
+> "Oxford mode. Three formal rounds. Against the Scientist — who demands proof for everything."
 
----
-
-## SCREEN 4 — DEBATE ARENA [1:20–2:10]
-
-**[SCREEN: DebateArena. Round tracker shows Round 1 of 5. Journalist icon + tagline "The Contrarian" centred. Topic strip shows YOU: FOR vs 📰 JOURNALIST.]**
-
-**NARRATION:**
-> "The arena. Five rounds. The AI goes first after your opening."
-
-**[ACTION: Type into the input — "Automation historically creates more jobs than it destroys — the Industrial Revolution is proof." Hit send.]**
-
-**[SCREEN: AI response streams in token by token, cursor blinking in pink (Journalist color).]**
-
-**NARRATION:**
-> "The AI responds in real time — streaming, in character, no holds barred."
-
-**[ACTION: Point to the FALLACY DETECTOR icon (triangle). Click to enable it — turns amber.]**
-
-**NARRATION:**
-> "With the Fallacy Detector on, every argument — yours and the AI's — gets scanned for logical errors. Ad hominem. False equivalence. Slippery slope. Tagged live."
-
-**[SCREEN: AI's second response shows a fallacy badge below the bubble — e.g. "HASTY GENERALIZATION".]**
-
-**NARRATION:**
-> "There it is. Hasty generalization — flagged automatically."
-
-**[ACTION: Click the COACH (book icon). Coach panel slides down — "COACH WHISPER — hover to reveal".]**
-
-**NARRATION:**
-> "Coach Mode gives you AI-whispered strategy tips — what your opponent's weak point is, and how to exploit it. Hover to reveal."
-
-**[ACTION: Click VOICE icon to enable TTS — glows green. Point to MIC button.]**
-
-**NARRATION:**
-> "Voice mode reads the AI's arguments aloud, and you can argue back with your microphone. Full voice duel — no typing required."
+5. **Click** `INITIALIZE DEBATE`
 
 ---
 
-## SCREEN 5 — VERDICT [2:10–2:45]
+## 🧪 SCREEN 2 — STEELMAN ANALYSIS [0:25–0:40]
 
-**[ACTION: Fast-forward indicator. Skip to end of debate — click REQUEST VERDICT.]**
+**SAY:**
+> "Before you pick a side, the AI steelmans both positions. No strawmen — only the strongest arguments each side can make."
 
-**[SCREEN: Spinner. "JUDGE DELIBERATING...". Then — dramatic reveal. Trophy emoji. "YOU WIN" in green, large font.]**
+### DO:
+1. **Scroll** the FOR panel — note strength percentages
+2. **Glance** at the AGAINST panel
 
-**NARRATION:**
-> "After five rounds — the AI judge delivers its verdict."
+**SAY:**
+> "Each argument has a strength score and category. You see what you're walking into."
 
-**[SCREEN: Typewriter text animates the verdict paragraph.]**
-
-**NARRATION:**
-> "Score breakdown across Logic, Evidence, and Clarity. Your ring vs the AI's ring. Side by side."
-
-**[ACTION: Pan across the four ScoreRing cards. Overall ring glows amber.]**
-
-**NARRATION:**
-> "Best argument of the debate — highlighted. Shareable. Exportable as a full transcript."
-
-**[ACTION: Click n8n AUTOMATE button.]**
-
-**NARRATION:**
-> "One click — the entire debate fires into an n8n workflow. Email it, log it to Notion, post it to Discord. Whatever you've built."
-
-**[ACTION: Click MIRO MAP button.]**
-
-**NARRATION:**
-> "Or send it to Miro — and get a live visual argument map. Every claim, every counter, every fallacy. On a board."
+3. **Click** `PICK YOUR SIDE →`
 
 ---
 
-## SCREEN 6 — LEADERBOARD [2:45–2:58]
+## ⚔️ SCREEN 3 — SIDE SELECT [0:40–0:48]
 
-**[ACTION: Click HALL OF FAME.]**
+**SAY:**
+> "For. Against. Or Devil's Advocate — argue the side you disagree with. Hard mode."
 
-**[SCREEN: Leaderboard. Gold/Silver/Bronze medals. Stats: 12,847 debates, 48% human wins, 52% AI wins.]**
-
-**NARRATION:**
-> "The Hall of Fame. Top debates ranked by score. The AI wins slightly more than half. For now."
-
----
-
-## OUTRO [2:58–3:10]
-
-**[SCREEN: Return to landing. Logo. Sponsor badges — FEATHERLESS AI × n8n × MIRO.]**
-
-**NARRATION:**
-> "P.A.R.I.T.Y. — Parallel Algorithms for Resolution of Ideological and Tactical Yields."
-> "Built for LovHack Season 2. Powered by Featherless AI, n8n, and Miro."
-> "Enter any opinion. Pick a side. Win the argument."
-
-**[SCREEN: PARITY logo. Fade to black.]**
+1. **Click** `FOR` → green glow + checkmark
+2. **Click** `ENTER THE ARENA →`
 
 ---
 
-## NOTES FOR RECORDING
+## 💬 SCREEN 4 — LIVE DEBATE [0:48–1:30]
 
-- **Total runtime:** ~3 min 10 sec
-- **Tone:** Cool, confident, fast-paced. No filler words. Let the UI breathe for 1-2 seconds on key moments.
-- **Key moments to linger on:** Steelman split panel loading, fallacy badge appearing, verdict reveal, score rings animating
-- **Skip transitions:** Use a subtle cut or speed ramp between Screen 3→4 and between rounds in the debate
-- **Music suggestion:** Lo-fi electronic, mid-tempo, slightly tense — something that fits a "debate arena" aesthetic
-- **Captions:** Add on-screen text labels for: "STEELMAN ANALYSIS", "FALLACY DETECTED", "COACH MODE", "n8n EXPORT", "MIRO MAP"
+### ROUND 1 [0:48–1:05]
+
+**SAY:**
+> "The arena. Three rounds. You argue — the AI responds in real time."
+
+1. **Type:**
+```
+Every technological revolution has created more jobs than it destroyed. The Industrial Revolution, the internet age — each time, new industries emerged that nobody predicted. AI is no different.
+```
+2. **Press Enter** → AI streams response
+
+**SAY (while AI streams):**
+> "The response streams live. Every word generated in character."
+
+### FEATURES [1:05–1:20]
+3. **Click** ⚠️ triangle (Fallacy Detector — turns amber)
+4. **Click** 📖 book (Coach Mode — purple panel)
+
+**SAY:**
+> "Fallacy detector scans for logic errors live. Coach Mode whispers strategy hints."
+
+### ROUND 2 [1:20–1:30]
+5. **Type:**
+```
+Your argument ignores that AI augments humans rather than replacing them. Radiologists using AI are more accurate, not unemployed. The data proves augmentation, not elimination.
+```
+6. **Press Enter** → let AI respond
+
+**SAY:**
+> "Round two. The AI pushes back harder each round."
+
+7. After AI responds → **click** 🏳️ flag icon → REQUEST VERDICT
+
+---
+
+## 🏆 SCREEN 5 — VERDICT [1:30–1:50]
+
+**SAY:**
+> "The AI judge scores both sides on Logic, Evidence, and Clarity. No bias — just the arguments."
+
+1. **Let verdict typewrite** for a few seconds
+2. **Mouse over** the 4 score rings
+3. **Scroll** to BEST ARGUMENT
+
+**SAY:**
+> "Score breakdown. Best argument highlighted. And one-click exports."
+
+4. **Click** `n8n AUTOMATE`
+5. **Click** `MIRO MAP`
+
+**SAY:**
+> "Send the debate to n8n — email, Sheets, Discord. Or export to Miro as a visual argument map."
+
+---
+
+## 🔚 OUTRO [1:50–2:00]
+
+1. **Click** `NEW DEBATE` → back to landing
+2. **Scroll** to sponsor badges
+
+**SAY:**
+> "Parity. Built for LovHack Season 2. Powered by Featherless AI, n8n, and Miro. Enter any opinion. Pick a side. Win the argument."
+
+---
+
+## 📝 COPY-PASTE ARGUMENTS
+
+**Round 1:**
+```
+Every technological revolution has created more jobs than it destroyed. The Industrial Revolution, the internet age — each time, new industries emerged that nobody predicted. AI is no different.
+```
+
+**Round 2:**
+```
+Your argument ignores that AI augments human workers rather than replacing them. Radiologists using AI are more accurate, not unemployed. The data proves augmentation, not elimination.
+```
+
+**Round 3 (optional):**
+```
+The economic data is clear: countries that adopted automation earliest have the lowest unemployment. Japan, South Korea, Germany — heavily automated, near-full employment.
+```
+
+---
+
+## 📋 CHECKLIST
+- [ ] Chrome full-screen (F11)
+- [ ] Clear localStorage for fresh start
+- [ ] Use live URL — test AI responds first
+- [ ] OBS/Loom at 1080p+
+- [ ] Script on second monitor
